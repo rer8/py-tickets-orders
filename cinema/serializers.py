@@ -135,14 +135,12 @@ class TicketSerializer(serializers.ModelSerializer):
         fields = ("row", "seat", "movie_session")
 
     def validate(self, attrs):
-        data = super().validate(attrs)
-        Ticket.validate_ticket(
-            attrs["row"],
-            attrs["seat"],
-            attrs["movie_session"].cinema_hall,
-            ValidationError,
-        )
-        return data
+        ticket = Ticket(**attrs)
+        try:
+            ticket.clean()
+        except ValidationError as error:
+            raise ValidationError(error.messages)
+        return attrs
 
 
 class OrderListSerializer(serializers.ModelSerializer):

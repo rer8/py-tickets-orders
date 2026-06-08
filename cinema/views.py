@@ -1,6 +1,6 @@
 from django.db.models import Count, F
 from rest_framework import mixins, viewsets
-from rest_framework.pagination import PageNumberPagination  # Додано імпорт
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 
 from cinema.models import (
@@ -26,30 +26,28 @@ from cinema.serializers import (
 )
 
 
-class OrderPagination(PageNumberPagination):  # Кастомний клас пагінації
-    page_size = 10
-    page_size_query_param = "page_size"
-    max_page_size = 100
-
-
 class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    pagination_class = None
 
 
 class ActorViewSet(viewsets.ModelViewSet):
     queryset = Actor.objects.all()
     serializer_class = ActorSerializer
+    pagination_class = None
 
 
 class CinemaHallViewSet(viewsets.ModelViewSet):
     queryset = CinemaHall.objects.all()
     serializer_class = CinemaHallSerializer
+    pagination_class = None
 
 
 class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
+    pagination_class = None
 
     def get_queryset(self):
         queryset = self.queryset
@@ -83,6 +81,7 @@ class MovieViewSet(viewsets.ModelViewSet):
 class MovieSessionViewSet(viewsets.ModelViewSet):
     queryset = MovieSession.objects.all()
     serializer_class = MovieSessionSerializer
+    pagination_class = None
 
     def get_queryset(self):
         queryset = self.queryset
@@ -121,7 +120,7 @@ class OrderViewSet(
     mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet
 ):
     permission_classes = (IsAuthenticated,)
-    pagination_class = OrderPagination  # Пагінація діє ТІЛЬКИ тут
+    pagination_class = PageNumberPagination
 
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user).prefetch_related(
